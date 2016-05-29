@@ -9,6 +9,7 @@ from SVM_Query_Constructor import SVM_Query_Constructor
 from Moses_Wrapper import Moses_Wrapper
 from LibSVM_Wrapper import LibSVM_Wrapper
 from shutil import copyfile
+from datetime import datetime
 
 k_best_name="_best_list"
 query_name="query_list"
@@ -60,6 +61,8 @@ def main():
     libsvm_wrapper = LibSVM_Wrapper(rankSVM)
     
     for i in xrange(iterations):
+        print "Starting APRO iteration {1} at {2}".format(str(i + 1), datetime.now())
+
         suffix = "." + str(i + 1)
         current_k_best = k_best_name + suffix
         moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
@@ -70,9 +73,14 @@ def main():
         else:
             k_best_size = moses_wrapper.compute_k_best_length(current_k_best)
             copyfile(current_k_best, acc_k_best_name)
-        query_constructor.write_query_file(moses_wrapper, acc_k_best_name, refs, query_name + suffix)
+
+        bleu_list = moses_wrapper.compute_sentence_bleu(acc_k_best_name, refs)
+        query_constructor.write_query_file(moses_wrapper, acc_k_best_name, query_name + suffix)
         libsvm_wrapper.optimise(query_name, str(regularisation_strength / k_best_size), weight_name)
         query_constructor.create_moses_ini(weight_name)
+
+        print "Finished APRO iteration {1} at {2}".format(str(i + 1), datetime.now())
+
         if (i == 9):
             print 'Removing accumulated k-best list after iteration 10'
             os.remove(acc_k_best_name)
