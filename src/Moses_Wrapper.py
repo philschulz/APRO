@@ -49,15 +49,30 @@ class Moses_Wrapper(object):
         with open(list1) as k_best:
             for line in k_best:
                 k_best_1.add(line)
+
+        k1_size = len(k_best_1)
                  
         with open(list2) as k_best:
             for line in k_best:
                 k_best_2.add(line)
                  
         k_best_1.update(k_best_2)
-        k_best_sorted = sorted(k_best_1, key = lambda x : int(x.split()[0]))
+        updated_size = len(k_best_1)
+        changed = k1_size != updated_size
+
+        if changed:
+            k_best_sorted = k_best_1
+        else:
+            k_best_sorted = sorted(k_best_1, key = lambda x : int(x.split()[0]))
          
         with open(out_file, "w") as out:
             for line in k_best_sorted:
                 out.write(line)
-            
+
+        return updated_size, changed
+
+    def compute_k_best_length(self, k_best_list):
+        length = 0
+        with open(k_best_list) as k_best:
+            for _ in k_best:
+                length += 1

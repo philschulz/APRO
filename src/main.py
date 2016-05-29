@@ -8,6 +8,7 @@ import argparse, os
 from SVM_Query_Constructor import SVM_Query_Constructor
 from Moses_Wrapper import Moses_Wrapper
 from LibSVM_Wrapper import LibSVM_Wrapper
+from shutil import copyfile
 
 k_best_name="_best_list"
 query_name="query_list"
@@ -33,8 +34,9 @@ def main():
     command_line_parser.add_argument("--k-best-list", help="Path to a already computed k-best-list. This option is only here for development purposes.")
     command_line_parser.add_argument("--threads", help="Set number of threads to use during decoding. There is no support for LIBSVM multithreading at the moment.", type=int, default=1)
     command_line_parser.add_argument("-C", help="Set the regularization strength for the L2-regulariser of RankSVM. The set value will be divided by the number "
-                                     "of candidates in each k-best list. Changing this parameter from its default value of 0.01 is strongly discouraged. Changes of this "
-                                     "parameter should always be reported, especially if subsequent significance testing is performed.", type=int, default=0.01)
+                                     "of candidates in each k-best list. The value of this parameter is applied to the hinge loss objective. Thus, higher values lead "
+                                     "to less regularization. Changing this parameter from its default value of 0.01 is strongly discouraged. Changes of this "
+                                     "parameter should always be reported, especially if subsequent significance testing is performed.", type=float, default=0.01)
     command_line_parser.add_argument("-i","--iterations", help="Set the maximum number of tuning iterations. Tuning is stopped automatically whenever the candidate k-best list "
                                      "does not change across consecutive optimisation runs. Changing this parameter from its default value of 30 is strongly discouraged. Changes of this "
                                      "parameter should always be reported, especially if subsequent significance testing is performed.", type=int, default=30)
@@ -50,23 +52,29 @@ def main():
     refs = args["dev_target"]
     threads = args["threads"]
     rankSVM = args["rank_SVM"]
-    regularisation_strength = str(args["C"])
+    regularisation_strength = args["C"]
     iterations = args["iterations"]
     
     moses_wrapper = Moses_Wrapper(moses)
     query_constructor = SVM_Query_Constructor(moses_ini)
     libsvm_wrapper = LibSVM_Wrapper(rankSVM)
     
-    # TODO stop when accumulated k-best does not change anymore!
     for i in xrange(iterations):
         suffix = "." + str(i + 1)
-        moses_wrapper.create_k_best_list(moses_ini, source, k_best_name + suffix, k, threads=threads)
+        current_k_best = k_best_name + suffix
+        moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
         if os.path.isfile(acc_k_best_name):
-            moses_wrapper.merge_k_best_lists(acc_k_best_name, k_best_name + suffix, acc_k_best_name)
-        query_constructor.write_query_file(moses_wrapper, k_best_name, refs, query_name + suffix)
-        libsvm_wrapper.optimise(query_name, regularisation_strength, weight_name)
+            k_best_size, changed = moses_wrapper.merge_k_best_lists(acc_k_best_name, current_k_best, acc_k_best_name)
+            if not changed:
+                print 'Tuning stopped early after iteration {1} because accumulated k_best_list did not change.'.format(i)
+        else:
+            k_best_size = moses_wrapper.compute_k_best_length(current_k_best)
+            copyfile(current_k_best, acc_k_best_name)
+        query_constructor.write_query_file(moses_wrapper, acc_k_best_name, refs, query_name + suffix)
+        libsvm_wrapper.optimise(query_name, str(regularisation_strength / k_best_size), weight_name)
         query_constructor.create_moses_ini(weight_name)
         if (i == 9):
+            print 'Removing accumulated k-best list after iteration 10'
             os.remove(acc_k_best_name)
     
 if __name__ == '__main__':
