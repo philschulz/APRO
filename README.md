@@ -26,7 +26,8 @@ since changes in BLEU are now only due to changes in the system.
 treatments. For SMT this means, that if your baseline system is tuned in a different way that the system you experiment with,
 any statistical significance test you do is essentially meaningless (read: the test is not defined for such a situation!). 
 This is clearly the case when your tuner is
-non-deterministic. As far as I know, APRO is currently the only deterministic tuner. IMPORTANT: There are so many conceptual 
+non-deterministic. As far as I know, APRO is currently the only deterministic tuner. **IMPORTANT:** 
+There are so many conceptual 
 problems with significance tests that I would actually discourage people from using them. However,
 if you have to use those tests, please use APRO for tuning to at least reduce the influence that the tuner has on your test.
 
@@ -38,7 +39,7 @@ decision. The initial weights of newly introduced features are tricky. While for
 used the initial features provided by Moses, the initial weights of custom-made features have to be set by hand. I suggest
 using an initial value of 0 for new features. Notice that the value 0 could in principle be replaced by any constant C,
 but I do believe that it is crucial that there be a consensus on that value. Most importantly, it needs to be the same 
-constant C for *ALL* newly introduced features. 
+constant C for **ALL** newly introduced features. 
 
 ## Required Libraries
 
