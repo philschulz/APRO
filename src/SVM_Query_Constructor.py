@@ -93,7 +93,7 @@ class SVM_Query_Constructor(object):
         """
 
         i = 0
-        sys.stderr.write("Creating query list")
+        sys.stderr.write("Creating query list\n")
         with open(k_best_list) as k_best, open(name, "w") as out:
             for line in k_best:
                 fields = line.split(" ||| ")
