@@ -65,19 +65,19 @@ def main():
         print "Starting APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
 
         suffix = "." + str(i + 1)
-        current_k_best = k_best_name + suffix
-        moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
-        if os.path.isfile(acc_k_best_name):
-            k_best_size, changed = moses_wrapper.merge_k_best_lists(acc_k_best_name, current_k_best, acc_k_best_name)
-            if not changed:
-                print 'Tuning stopped early after iteration {0} because accumulated k_best_list did not change.\n'.format(i)
-        else:
-            k_best_size = moses_wrapper.compute_k_best_length(current_k_best)
-            copyfile(current_k_best, acc_k_best_name)
+        #current_k_best = k_best_name + suffix
+        #moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
+        #if os.path.isfile(acc_k_best_name):
+        #    k_best_size, changed = moses_wrapper.merge_k_best_lists(acc_k_best_name, current_k_best, acc_k_best_name)
+        #    if not changed:
+        #        print 'Tuning stopped early after iteration {0} because accumulated k_best_list did not change.\n'.format(i)
+        #else:
+        #    k_best_size = moses_wrapper.compute_k_best_length(current_k_best)
+        #    copyfile(current_k_best, acc_k_best_name)
 
-        bleu_list = moses_wrapper.compute_sentence_bleu(acc_k_best_name, refs)
-        query_constructor.write_query_file(bleu_list, acc_k_best_name, query_name + suffix)
-        libsvm_wrapper.optimise(query_name, str(regularisation_strength / k_best_size), weight_name)
+        #bleu_list = moses_wrapper.compute_sentence_bleu(acc_k_best_name, refs)
+        #query_constructor.write_query_file(bleu_list, acc_k_best_name, query_name + suffix)
+        libsvm_wrapper.optimise(query_name + suffix, str(regularisation_strength / k_best_size), weight_name)
         query_constructor.create_moses_ini(weight_name)
 
         print "Finished APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
