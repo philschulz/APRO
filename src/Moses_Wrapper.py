@@ -41,7 +41,7 @@ class Moses_Wrapper(object):
         :param threads: Number of threads to be used by the decoder
         """
         with open(data) as k_best:
-            process = Popen([self.moses, "threads " + str(threads), "-f", moses_ini, "-n-best-list", list_name, str(k)], stdin=k_best)
+            process = Popen([self.moses, "-threads" + str(threads), "-f", moses_ini, "-n-best-list", list_name, str(k)], stdin=k_best)
             process.communicate()
 
     def _score_sentence_Bleu(self, candidate_file, reference_file, output_file=None):
