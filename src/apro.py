@@ -14,7 +14,8 @@ from datetime import datetime
 k_best_name="_best_list"
 query_name="query_list"
 weight_name="weights"
-acc_k_best_name="accumluated_k_best_list"
+acc_k_best_name="accumulated_k_best_list"
+local_moses_ini="moses.ini"
 
 def main():
     
@@ -65,7 +66,11 @@ def main():
 
         suffix = "." + str(i + 1)
         current_k_best = k_best_name + suffix
-        moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
+        if i == 0:
+            moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
+        else:
+            moses_wrapper.create_k_best_list(local_moses_ini, source, current_k_best, k, threads=threads)
+        
         if os.path.isfile(acc_k_best_name):
             k_best_size, changed = moses_wrapper.merge_k_best_lists(acc_k_best_name, current_k_best, acc_k_best_name)
             if not changed:
@@ -77,7 +82,7 @@ def main():
         bleu_list = moses_wrapper.compute_sentence_bleu(acc_k_best_name, refs)
         query_constructor.write_query_file(bleu_list, acc_k_best_name, query_name + suffix)
         libsvm_wrapper.optimise(query_name + suffix, str(regularisation_strength / k_best_size), weight_name)
-        query_constructor.create_moses_ini(weight_name)
+        query_constructor.create_moses_ini(weight_name, local_moses_ini)
 
         print "Finished APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
 

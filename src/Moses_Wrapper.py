@@ -120,11 +120,7 @@ class Moses_Wrapper(object):
         k_best_1.update(k_best_2)
         updated_size = len(k_best_1)
         changed = k1_size != updated_size
-
-        if changed:
-            k_best_sorted = k_best_1
-        else:
-            k_best_sorted = sorted(k_best_1, key = lambda x : int(x.split()[0]))
+        k_best_sorted = sorted(k_best_1, key = lambda x : int(x.split()[0]))
          
         with open(out_file, "w") as out:
             for line in k_best_sorted:
