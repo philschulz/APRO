@@ -59,6 +59,7 @@ def main():
     moses_wrapper = Moses_Wrapper(moses)
     query_constructor = SVM_Query_Constructor(moses_ini)
     libsvm_wrapper = LibSVM_Wrapper(rankSVM)
+    stop = False
 
     #TODO plug iterations in here
     for i in xrange(1):
@@ -71,6 +72,7 @@ def main():
             k_best_size, changed = moses_wrapper.merge_k_best_lists(acc_k_best_name, current_k_best, acc_k_best_name)
             if not changed:
                 print 'Tuning stopped early after iteration {0} because accumulated k_best_list did not change.\n'.format(i)
+                stop = True
         else:
             k_best_size = moses_wrapper.compute_k_best_length(current_k_best)
             copyfile(current_k_best, acc_k_best_name)
@@ -82,9 +84,12 @@ def main():
 
         print "Finished APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
 
-        if (i == 9):
+        if i == 9:
             print 'Removing accumulated k-best list after iteration 10\n'
             os.remove(acc_k_best_name)
+
+        if stop:
+            break
     
 if __name__ == '__main__':
     main()

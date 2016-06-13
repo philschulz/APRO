@@ -109,13 +109,15 @@ class Moses_Wrapper(object):
          
         with open(list1) as k_best:
             for line in k_best:
-                k_best_1.add(line)
+                relevant_fields = line.split(' ||| ')[:-1]
+                k_best_1.add(' ||| '.join(relevant_fields))
 
         k1_size = len(k_best_1)
                  
         with open(list2) as k_best:
             for line in k_best:
-                k_best_2.add(line)
+                relevant_fields = line.split(' ||| ')[:-1]
+                k_best_2.add(' ||| '.join(relevant_fields))
                  
         k_best_1.update(k_best_2)
         updated_size = len(k_best_1)
