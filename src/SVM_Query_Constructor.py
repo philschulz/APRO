@@ -101,3 +101,30 @@ class SVM_Query_Constructor(object):
                 features = fields[2].strip()
                 out.write(self._construct_sentence_query(sent_num, bleu_list[i], features) + "\n")
                 i += 1
+    
+    def _extract_weights(self, model_file):
+        weights = list()
+        with open(model_file) as model:
+            for line in model:
+                if _is_numeric(line):
+                    weights.append(line.strip())
+                    
+        return weights
+                    
+    def create_moses_ini(self, model_file, file_name="moses.ini"):
+        weights = self._extract_weights(model_file)
+        features = self.feature_map.keys()
+        
+        with open(self.moses_ini) as ini, open(file_name, "w") as out:
+            for line in ini:
+                out.write(line)
+                if "[weight]" in line:
+                    out.write(word_penalty + "= 1\n")
+                    break;
+                    
+            for line in ini:
+                for feature in features:
+                    if line.startswith(feature):
+                        values = [str(weights[idx]) for idx in self.feature_map[feature]]
+                        out.write(feature + "= " + " ".join(values) + "\n")
+    
