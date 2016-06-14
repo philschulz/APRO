@@ -61,8 +61,7 @@ def main():
     libsvm_wrapper = LibSVM_Wrapper(rankSVM)
     stop = False
 
-    #TODO plug iterations in here
-    for i in xrange(1):
+    for i in xrange(iterations):
         print "Starting APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
 
         suffix = "." + str(i + 1)
