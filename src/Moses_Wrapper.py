@@ -130,7 +130,7 @@ class Moses_Wrapper(object):
          
         with open(out_file, "w") as out:
             for line in k_best_sorted:
-                out.write(line)
+                out.write(line + "\n")
 
         return updated_size, changed
 
