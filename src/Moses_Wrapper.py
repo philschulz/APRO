@@ -5,7 +5,7 @@ Created on May 27, 2016
 '''
 
 from subprocess import Popen, PIPE
-import os
+import os, sys
 
 candidate_txt = "k_best_candidates.txt"
 ref_txt = "k_best_references.txt"
@@ -109,15 +109,27 @@ class Moses_Wrapper(object):
          
         with open(list1) as k_best:
             for line in k_best:
-                relevant_fields = line.split(' ||| ')[:-1]
-                k_best_1.add(' ||| '.join(relevant_fields))
+                fields = line.split(' ||| ')
+                if len(fields) == 4:
+                    k_best_1.add(' ||| '.join(fields[:-1]))
+                elif len(fields) == 3:
+                    k_best_1.add(' ||| '.join(fields))
+                else:
+                    sys.std.write("Warning: lists could not be merged because one of them does not contain the required fields.\n")
+                    break
 
         k1_size = len(k_best_1)
                  
         with open(list2) as k_best:
             for line in k_best:
-                relevant_fields = line.split(' ||| ')[:-1]
-                k_best_2.add(' ||| '.join(relevant_fields))
+                fields = line.split(' ||| ')
+                if len(fields) == 4:
+                    k_best_2.add(' ||| '.join(fields[:-1]))
+                elif len(fields) == 3:
+                    k_best_2.add(' ||| '.join(fields))
+                else:
+                    sys.std.write("Warning: lists could not be merged because one of them does not contain the required fields.\n")
+                    break
                  
         k_best_1.update(k_best_2)
         updated_size = len(k_best_1)

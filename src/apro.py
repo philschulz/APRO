@@ -62,12 +62,12 @@ def main():
     libsvm_wrapper = LibSVM_Wrapper(rankSVM)
     stop = False
 
-    for i in xrange(iterations):
-        print "Starting APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
+    for i in xrange(1, iterations + 1):
+        print "Starting APRO iteration {0} at {1}\n".format(str(i), datetime.now())
 
-        suffix = "." + str(i + 1)
+        suffix = "." + str(i)
         current_k_best = k_best_name + suffix
-        if i == 0:
+        if i == 1:
             moses_wrapper.create_k_best_list(moses_ini, source, current_k_best, k, threads=threads)
         else:
             moses_wrapper.create_k_best_list(local_moses_ini, source, current_k_best, k, threads=threads)
@@ -86,14 +86,14 @@ def main():
         libsvm_wrapper.optimise(query_name + suffix, str(regularisation_strength / k_best_size), weight_name)
         query_constructor.create_moses_ini(weight_name, local_moses_ini)
 
-        print "Finished APRO iteration {0} at {1}\n".format(str(i + 1), datetime.now())
-
-        if i == 9:
-            print 'Removing accumulated k-best list after iteration 10\n'
-            os.remove(acc_k_best_name)
+        print "Finished APRO iteration {0} at {1}\n".format(str(i), datetime.now())
 
         if stop:
             break
+
+        if i == 10:
+            print 'Removing accumulated k-best list after iteration 10\n'
+            os.remove(acc_k_best_name)
     
 if __name__ == '__main__':
     main()
