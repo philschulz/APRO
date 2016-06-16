@@ -1,7 +1,7 @@
 import sys
 from Moses_Wrapper import Moses_Wrapper
 
-wrapper = Moses_Wrapper()
-files = sys.argv[1:]
+fields = sys.argv[1:]
+wrapper = Moses_Wrapper(fields[0])
 
-wrapper.merge_k_best_lists(files[0], files[1])
+wrapper.merge_k_best_lists(fields[1], fields[2])
