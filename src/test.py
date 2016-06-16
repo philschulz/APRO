@@ -6,7 +6,7 @@ def main():
     print fields
     wrapper = Moses_Wrapper(fields[0])
 
-    wrapper.merge_k_best_lists(fields[1], fields[2])
+    wrapper.merge_k_best_lists(fields[1], fields[2], "bla.txt")
 
 if __name__ == "__main__":
     main()
