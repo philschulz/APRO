@@ -83,8 +83,8 @@ def main():
 
         bleu_list = moses_wrapper.compute_sentence_bleu(acc_k_best_name, refs)
         query_constructor.write_query_file(bleu_list, acc_k_best_name, query_name + suffix)
-        libsvm_wrapper.optimise(query_name + suffix, str(regularisation_strength / k_best_size), weight_name)
-        query_constructor.create_moses_ini(weight_name, local_moses_ini)
+        libsvm_wrapper.optimise(query_name + suffix, str(regularisation_strength / k_best_size), weight_name + suffix)
+        query_constructor.create_moses_ini(weight_name + suffix, local_moses_ini)
 
         print "Finished APRO iteration {0} at {1}\n".format(str(i), datetime.now())
 
