@@ -106,10 +106,10 @@ class Moses_Wrapper(object):
         """
         k_best_1 = set()
         k_best_2 = set()
-         
+
         with open(list1) as k_best:
             for line in k_best:
-                fields = line.split(' ||| ')
+                fields = line.strip('\n').split(' ||| ')
                 if len(fields) == 4:
                     k_best_1.add(' ||| '.join(fields[:-1]))
                 elif len(fields) == 3:
